@@ -1,0 +1,27 @@
+# A directory argument is nonrecursive; explicit files in skipped directories work.
+
+cp project/nested/other.go original-nested
+exec format-structs -root project .
+stdout '^sample.go$'
+cmp project/sample.go expected
+cmp project/nested/other.go original-nested
+exec format-structs -root project testdata/explicit.go
+stdout '^testdata/explicit.go$'
+cmp project/testdata/explicit.go expected
+
+-- project/sample.go --
+package sample
+var x=[]int{1,2}
+-- project/nested/other.go --
+package sample
+var x=[]int{1,2}
+-- project/testdata/explicit.go --
+package sample
+var x=[]int{1,2}
+-- expected --
+package sample
+
+var x = []int{
+	1,
+	2,
+}

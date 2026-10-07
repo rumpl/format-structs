@@ -1,0 +1,13 @@
+# A parse error must not partially format other files.
+
+cp project/first.go original
+! exec format-structs -root project
+stderr 'expected.*package'
+! stdout .
+cmp project/first.go original
+
+-- project/first.go --
+package sample
+var x=[]int{1,2}
+-- project/last.go --
+invalid syntax

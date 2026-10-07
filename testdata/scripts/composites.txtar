@@ -1,0 +1,86 @@
+# Nonempty composite literals expand without type checking. Comments and empty
+# literals are preserved. Formatting is idempotent.
+
+cp input.go original
+! exec format-structs -check input.go
+stdout '^input.go$'
+stderr '1 files need composite literal formatting'
+cmp input.go original
+exec format-structs input.go
+stdout '^input.go$'
+! stderr .
+cmp input.go expected
+exec format-structs -check input.go
+! stdout .
+! stderr .
+
+-- input.go --
+package sample
+
+type S struct { A int; B *S }
+type Alias = S
+var a = S{A: 1, B: &S{A: 2}}
+var b = []S{{A: 3}, {A: 4}}
+var c = map[string]S{"x": {A: 5}}
+var d = Alias{A: 6, /* comma , inside comment */}
+var e = S{}
+var f = []int{1, 2}
+var g = map[string]int{"one": 1, "two": 2}
+var h = struct{ Value string }{Value: "a,b"}
+var i = S{7, nil}
+var j = [2]int{1, 2}
+var k = map[string]int{}
+var l = []int{}
+-- expected --
+package sample
+
+type S struct {
+	A int
+	B *S
+}
+type Alias = S
+
+var a = S{
+	A: 1,
+	B: &S{
+		A: 2,
+	},
+}
+var b = []S{
+	{
+		A: 3,
+	},
+	{
+		A: 4,
+	},
+}
+var c = map[string]S{
+	"x": {
+		A: 5,
+	},
+}
+var d = Alias{
+	A: 6,
+	/* comma , inside comment */}
+var e = S{}
+var f = []int{
+	1,
+	2,
+}
+var g = map[string]int{
+	"one": 1,
+	"two": 2,
+}
+var h = struct{ Value string }{
+	Value: "a,b",
+}
+var i = S{
+	7,
+	nil,
+}
+var j = [2]int{
+	1,
+	2,
+}
+var k = map[string]int{}
+var l = []int{}

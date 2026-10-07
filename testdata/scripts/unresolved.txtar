@@ -1,0 +1,29 @@
+# Missing imports and undefined types do not prevent syntax formatting.
+
+exec format-structs input.go
+cmp input.go expected
+exec format-structs -check input.go
+! stdout .
+
+-- input.go --
+package sample
+import "missing.invalid/package"
+var a = unknown.Config{Value: 1}
+var b = Missing{2}
+var c = []Missing{{3}}
+-- expected --
+package sample
+
+import "missing.invalid/package"
+
+var a = unknown.Config{
+	Value: 1,
+}
+var b = Missing{
+	2,
+}
+var c = []Missing{
+	{
+		3,
+	},
+}

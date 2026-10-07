@@ -1,0 +1,17 @@
+# Help, unknown flags, and invalid inputs report errors on stderr.
+
+exec format-structs -help
+stderr 'Usage: format-structs'
+! stdout .
+! exec format-structs -unknown
+stderr 'flag provided but not defined'
+! stdout .
+! exec format-structs missing.go
+stderr 'missing.go'
+! stdout .
+! exec format-structs plain.txt
+stderr 'not a Go source file'
+! stdout .
+
+-- plain.txt --
+not Go
